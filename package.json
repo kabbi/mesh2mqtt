@@ -1,0 +1,21 @@
+{
+  "name": "mesh2mqtt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async-mqtt": "^2.6.1",
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.20",
+    "mqtt": "^4.2.1",
+    "path-to-regexp": "^6.2.0",
+    "prettier": "^2.1.1",
+    "url-pattern": "^1.0.3"
+  }
+}
