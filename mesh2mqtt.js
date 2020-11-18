@@ -11,6 +11,8 @@ const { kebabCase } = require('lodash');
 const mqtt = require('./mqtt');
 require('dotenv').config();
 
+const TypeToTopic = require('./topics');
+
 const client = mqtt.connect(process.env.MQTT_URL || 'localhost');
 const prefix = process.env.MESH_MQTT_PREFIX || 'mesh2mqtt';
 const ownMeshAddr = 0x7fc;
@@ -18,18 +20,6 @@ let bridgeAddr; // FIXME
 
 const keychain = new Keychain();
 keychain.load(require('./keychain.json'));
-
-// TODO: Make configurable
-const TypeToTopic = {
-  GenericOnOffGet: ['generic-onoff', 'get'],
-  GenericOnOffSet: ['generic-onoff', 'set'],
-  GenericOnOffStatus: ['generic-onoff', 'status'],
-  GenericOnOffSetUnacknowledged: ['generic-onoff', 'set-unack'],
-  LightLightnessStatus: ['light-lightness', 'status'],
-  LightLightnessSetUnacknowledged: ['light-lightness', 'set-unack'],
-  LightCTLTemperatureStatus: ['light-ctl', 'temp-status'],
-  LightCTLTemperatureSetUnacknowledged: ['light-ctl', 'temp-set-unack'],
-};
 
 // Setup mesh stuff
 const networkLayer = new NetworkLayer(keychain);

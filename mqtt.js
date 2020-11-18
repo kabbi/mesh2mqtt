@@ -25,6 +25,16 @@ const patchClient = (client) => {
       handler(matched, payload);
     });
   };
+
+  client.publishJSON = async (topic, payload) => {
+    await client.publish(topic, JSON.stringify(payload));
+  };
+
+  client.handleJSON = async (topicPattern, handler) => {
+    await client.handle(topicPattern, (match, payload) =>
+      handler(match, JSON.parse(payload)),
+    );
+  };
 };
 
 module.exports = {

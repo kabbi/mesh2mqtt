@@ -44,6 +44,69 @@ const deviceHandlers = {
       },
     );
   },
+  light: async (config) => {
+    const { addr, features } = config;
+
+    await client.publish(
+      `homeassistant/light/${addr}/light/config`,
+      JSON.stringify({
+        device: {
+          identifiers: [`blemesh_${addr}`],
+          name: addr,
+        },
+        schema: 'json',
+        command_topic: `${prefix}/${addr}/cmd`,
+        state_topic: `${prefix}/${addr}/state`,
+        brightness: features.some((f) => f.type === 'brightness'),
+        color_temp: features.some((f) => f.type === 'color-temperature'),
+        name: `${addr}_light`,
+        unique_id: addr,
+      }),
+    );
+
+    // Incoming
+    await client.handleJSON(`${prefix}/${addr}/cmd`, async (match, payload) => {
+      const { state, brightness, color_temp } = payload;
+      await client.publishJSON(
+        `${meshPrefix}/${addr}/models/generic-onoff/set-unack/send`,
+        {
+          status: state.toLowerCase(),
+        },
+      );
+      if (brightness != null) {
+        const { overrideAddr } = features.find((f) => f.type === 'brightness');
+        const target = overrideAddr || addr;
+        await client.publishJSON(
+          `${meshPrefix}/${target}/models/light-lightness/set-unack/send`,
+          {
+            lightness: (brightness / 255) * 65535,
+          },
+        );
+      }
+      if (color_temp != null) {
+        const { overrideAddr } = features.find(
+          (f) => f.type === 'color-temperature',
+        );
+        const target = overrideAddr || addr;
+        await client.publishJSON(
+          `${meshPrefix}/${target}/models/light-ctl/temp-set-unack/send`,
+          {
+            temperature: Math.round(1000000 / color_temp), // hass uses mireds
+          },
+        );
+      }
+    });
+
+    // Outgoing
+    await client.handleJSON(
+      `${meshPrefix}/${addr}/models/generic-onoff/status`,
+      async (match, payload) => {
+        await client.publishJSON(`${prefix}/${addr}/state`, {
+          state: `${payload.status}`.toUpperCase(),
+        });
+      },
+    );
+  },
 };
 
 client.on('connect', async () => {
@@ -60,64 +123,3 @@ client.on('connect', async () => {
     handler(device);
   }
 });
-
-// accessLayer.on('incoming', (msg) => {
-// debug('incoming message', msg);
-// const id = msg.meta.from.toString(16).padStart(4, '0');
-
-// if (id === '1006') {
-// if (!devicesSeen.has(msg.meta.from)) {
-// devicesSeen.add(msg.meta.from);
-// client.publish(
-// `homeassistant/device_automation/${id}/action_short_press/config`,
-// JSON.stringify({
-// automation_type: 'trigger',
-// device: {
-// identifiers: [`blemesh_${id}`],
-// name: id,
-// },
-// payload: 'button_short_press',
-// subtype: 'button_1',
-// topic: `mesh2mqtt/devices/${id}/action`,
-// type: 'action',
-// }),
-// );
-// }
-// if (msg.type === 'GenericOnOffSetUnacknowledged') {
-// const transactionKey = `${id}:${msg.payload.transactionId}`;
-// if (msg.payload.transactionId && transactionsSeen.has(transactionKey)) {
-// return;
-// }
-// client.publish(`${prefix}/devices/${id}/action`, 'button_short_press');
-// transactionsSeen.add(transactionKey);
-// }
-// }
-
-// if (id === '0015') {
-// if (!devicesSeen.has(msg.meta.from)) {
-// devicesSeen.add(msg.meta.from);
-// client.publish(
-// `homeassistant/light/${id}/light/config`,
-// JSON.stringify({
-// device: {
-// identifiers: [`blemesh_${id}`],
-// name: id,
-// },
-// schema: 'json',
-// command_topic: `mesh2mqtt/devices/${id}/light/set`,
-// state_topic: `mesh2mqtt/devices/${id}/light/state`,
-// name: `${id}_light`,
-// unique_id: id,
-// }),
-// );
-// }
-// if (msg.type === 'GenericOnOffStatus') {
-// client.publish(
-// `${prefix}/devices/${id}/light/status`,
-// JSON.stringify({
-// state: `${msg.payload.currentStatus}`.toUpperCase(),
-// }),
-// );
-// }
-// }
-// });
