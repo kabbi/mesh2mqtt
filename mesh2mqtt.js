@@ -48,17 +48,13 @@ lowerLayer.on('outgoing', (networkMessage) => {
 });
 
 // Handle all the mqtt topics
-client.on('connect', async () => {
+client.once('connect', async () => {
   await client.publish(`${prefix}/online`, 'true');
 
-  // Route meshbridge messages from mqtt to mesh stack and back
+  // Route meshbridge messages from mqtt to mesh stack
   await client.handle('meshbridge/:addr/msg', (match, payload) => {
     bridgeAddr = match.params.addr;
     networkLayer.handleIncoming(payload);
-  });
-  networkLayer.on('outgoing', async (payload) => {
-    debug('sending', payload.toString('hex'));
-    await client.publish(`meshbridge/${bridgeAddr}/msg/send`, payload);
   });
 
   // Model behaviour, outgoing
@@ -84,20 +80,26 @@ client.on('connect', async () => {
       });
     },
   );
+});
 
-  // Model behaviour, incoming
-  accessLayer.on('incoming', async (msg) => {
-    debug('incoming message', msg);
-    const addr = msg.meta.from.toString(16).padStart(4, '0');
+// Route meshbridge messages from mesh stacl to mqtt
+networkLayer.on('outgoing', async (payload) => {
+  debug('sending', payload.toString('hex'));
+  await client.publish(`meshbridge/${bridgeAddr}/msg/send`, payload);
+});
 
-    await client.publish(`${prefix}/rx`, JSON.stringify(msg));
+// Model behaviour, incoming
+accessLayer.on('incoming', async (msg) => {
+  debug('incoming message', msg);
+  const addr = msg.meta.from.toString(16).padStart(4, '0');
 
-    const topic = TypeToTopic[msg.type];
-    if (topic) {
-      await client.publish(
-        `${prefix}/${addr}/models/${topic.join('/')}`,
-        JSON.stringify(msg.payload),
-      );
-    }
-  });
+  await client.publish(`${prefix}/rx`, JSON.stringify(msg));
+
+  const topic = TypeToTopic[msg.type];
+  if (topic) {
+    await client.publish(
+      `${prefix}/${addr}/models/${topic.join('/')}`,
+      JSON.stringify(msg.payload),
+    );
+  }
 });
