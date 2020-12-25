@@ -10,6 +10,7 @@ const prefix = process.env.HASS_MQTT_PREFIX || 'mesh2hass';
 const meshPrefix = process.env.MESH_MQTT_PREFIX || 'mesh2mqtt';
 
 const transactionsSeen = new Set();
+const transactionsSent = new Map();
 
 const deviceHandlers = {
   'onoff-client-button': async (config) => {
@@ -41,6 +42,48 @@ const deviceHandlers = {
 
         transactionsSeen.add(transactionKey);
         client.publish(`${prefix}/${addr}/action`, 'button_short_press');
+      },
+    );
+  },
+  switch: async (config) => {
+    const { addr, features } = config;
+
+    await client.publish(
+      `homeassistant/switch/${addr}/config`,
+      JSON.stringify({
+        device: {
+          identifiers: [`blemesh_${addr}`],
+          name: addr,
+        },
+        command_topic: `${prefix}/${addr}/cmd`,
+        state_topic: `${prefix}/${addr}/state`,
+        name: `${addr}_switch`,
+        unique_id: addr,
+      }),
+    );
+
+    // Incoming
+    await client.handle(`${prefix}/${addr}/cmd`, async (match, payload) => {
+      const tid = transactionsSent.get(addr) || 0;
+      transactionsSent.set(addr, tid + 1);
+
+      await client.publishJSON(
+        `${meshPrefix}/${addr}/models/generic-onoff/set-unack/send`,
+        {
+          status: payload.toString('utf8').toLowerCase(),
+          transactionId: tid,
+        },
+      );
+    });
+
+    // Outgoing
+    await client.handleJSON(
+      `${meshPrefix}/${addr}/models/generic-onoff/status`,
+      async (match, payload) => {
+        await client.publish(
+          `${prefix}/${addr}/state`,
+          `${payload.status}`.toUpperCase(),
+        );
       },
     );
   },
@@ -109,7 +152,8 @@ const deviceHandlers = {
   },
 };
 
-client.on('connect', async () => {
+client.setMaxListeners(1e3);
+client.once('connect', async () => {
   console.log('- setting up devices');
 
   for (const device of devices) {
