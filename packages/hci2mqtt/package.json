@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@kabbi/routed-mqtt": "^1.0.0",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "queue-promise": "^2.1.0"
   }
 }
