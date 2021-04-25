@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  hci2mqtt:
+    image: kabbi/hci2mqtt
+    restart: unless-stopped
+    # This network mode is important to pass ble device into container
+    network_mode: host
+    # All variables are optional, these are their default values
+    environment:
+      - MQTT_URL=mqtt://localhost
+      - BRIDGE_MQTT_PREFIX=meshbridge/rpi
+
+  mesh2mqtt:
+    image: kabbi/mesh2mqtt
+    restart: unless-stopped
+    # This network mode is not required, it's here because i'm lazy and running mqtt server on localhost
+    network_mode: host
+    volumes:
+      - ./keychain.json:/usr/src/app/keychain.json
+    # All variables are optional, these are their default values
+    environment:
+      - DEBUG=mesh:*
+      - MQTT_URL=mqtt://localhost
+      - MESH_MQTT_PREFIX=mesh2mqtt
+
+  mesh2hass:
+    image: kabbi/mesh2hass
+    restart: unless-stopped
+    # This network mode is not required, it's here because i'm lazy and running mqtt server on localhost
+    network_mode: host
+    volumes:
+      - ./devices.json:/usr/src/app/devices.json
+    # All variables are optional, these are their default values
+    environment:
+      - MQTT_URL=mqtt://localhost
+      - MESH_MQTT_PREFIX=mesh2mqtt
+      - HASS_MQTT_PREFIX=mesh2hass

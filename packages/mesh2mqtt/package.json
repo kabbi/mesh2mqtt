@@ -1,5 +1,5 @@
 {
-  "name": "@kabbi/mesh2mqtt-parent",
+  "name": "@kabbi/mesh2mqtt",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "workspaces": [
-    "./packages/*"
-  ]
+  "dependencies": {
+    "@kabbi/ble-mesh": "^1.0.4",
+    "@kabbi/routed-mqtt": "^1.0.0",
+    "debug": "^4.3.1",
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.21"
+  }
 }

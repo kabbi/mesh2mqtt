@@ -1,0 +1,120 @@
+[
+  {
+    "addr": "1100",
+    "type": "onoff-client-button"
+  },
+  {
+    "addr": "110d",
+    "type": "switch"
+  },
+  {
+    "addr": "110c",
+    "type": "strip",
+    "features": [
+      {
+        "type": "brightness"
+      },
+      {
+        "type": "rgb"
+      },
+      {
+        "type": "white-channel"
+      }
+    ]
+  },
+  {
+    "addr": "1108",
+    "type": "switch"
+  },
+  {
+    "addr": "0015",
+    "type": "light",
+    "features": [
+      {
+        "type": "brightness"
+      },
+      {
+        "type": "color-temperature",
+        "overrideAddr": "0016"
+      }
+    ]
+  },
+  {
+    "addr": "0017",
+    "type": "light",
+    "features": [
+      {
+        "type": "brightness"
+      },
+      {
+        "type": "color-temperature",
+        "overrideAddr": "0018"
+      }
+    ]
+  },
+  {
+    "addr": "000d",
+    "type": "light",
+    "features": [
+      {
+        "type": "brightness"
+      },
+      {
+        "type": "color-temperature",
+        "overrideAddr": "000e"
+      }
+    ]
+  },
+  {
+    "addr": "0011",
+    "type": "light",
+    "features": [
+      {
+        "type": "brightness"
+      },
+      {
+        "type": "color-temperature",
+        "overrideAddr": "0012"
+      }
+    ]
+  },
+  {
+    "addr": "0019",
+    "type": "light",
+    "features": [
+      {
+        "type": "brightness"
+      },
+      {
+        "type": "color-temperature",
+        "overrideAddr": "001a"
+      }
+    ]
+  },
+  {
+    "addr": "001b",
+    "type": "light",
+    "features": [
+      {
+        "type": "brightness"
+      },
+      {
+        "type": "color-temperature",
+        "overrideAddr": "001c"
+      }
+    ]
+  },
+  {
+    "addr": "1103",
+    "type": "light",
+    "features": [
+      {
+        "type": "hsl"
+      },
+      {
+        "type": "white-channel",
+        "overrideAddr": "1106"
+      }
+    ]
+  }
+]

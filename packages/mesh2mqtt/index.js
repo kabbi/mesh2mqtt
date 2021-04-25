@@ -6,16 +6,16 @@ const {
   UpperLayer,
   LowerLayer,
   Keychain,
-} = require('mesh-first-try');
+} = require('@kabbi/ble-mesh');
 const { kebabCase } = require('lodash');
-const mqtt = require('./mqtt');
+const mqtt = require('@kabbi/routed-mqtt');
 require('dotenv').config();
 
 const TypeToTopic = require('./topics');
 
-const client = mqtt.connect(process.env.MQTT_URL || 'localhost');
+const client = mqtt.connect(process.env.MQTT_URL || 'mqtt://localhost');
 const prefix = process.env.MESH_MQTT_PREFIX || 'mesh2mqtt';
-const ownMeshAddr = 0x7fc;
+const ownMeshAddr = 0x7fc; // TODO: Make configurable?
 let bridgeAddr; // FIXME
 
 const keychain = new Keychain();

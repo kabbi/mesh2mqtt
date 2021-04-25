@@ -1,5 +1,5 @@
 const cp = require('child_process');
-const mqtt = require('./mqtt');
+const mqtt = require('@kabbi/routed-mqtt');
 require('dotenv').config();
 
 const client = mqtt.connect(process.env.MQTT_URL || 'mqtt://localhost');
@@ -54,6 +54,11 @@ const sendHciCommand = async (cmd, data) => {
 
 client.once('connect', async () => {
   await client.handle(`${prefix}/msg/send`, async (match, payload) => {
+    if (payload.length >= 32) {
+      console.log('dropping message >31 bytes', payload.toString('hex'));
+      return;
+    }
+
     const msg = Buffer.concat([
       Buffer.of(payload.length + 2), // adv data header
       Buffer.of(payload.length + 1, 0x2a), // mesh packet header
