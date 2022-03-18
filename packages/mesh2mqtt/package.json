@@ -10,10 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@kabbi/ble-mesh": "^1.0.4",
+    "@kabbi/ble-mesh": "^1.0.7",
     "@kabbi/routed-mqtt": "^1.0.0",
     "debug": "^4.3.1",
     "dotenv": "^8.2.0",
+    "jbinary": "^2.1.5",
     "lodash": "^4.17.21"
   }
 }

@@ -4,7 +4,10 @@ module.exports = {
   GenericOnOffSet: ['generic-onoff', 'set'],
   GenericOnOffStatus: ['generic-onoff', 'status'],
   GenericOnOffSetUnacknowledged: ['generic-onoff', 'set-unack'],
+  GenericLevelGet: ['generic-level', 'get'],
+  GenericLevelSet: ['generic-level', 'set'],
   GenericLevelStatus: ['generic-level', 'status'],
+  GenericLevelSetUnacknowledged: ['generic-level', 'set-unack'],
   GenericBatteryStatus: ['generic-battery', 'status'],
   LightLightnessStatus: ['light-lightness', 'status'],
   LightLightnessSet: ['light-lightness', 'set'],
@@ -19,4 +22,6 @@ module.exports = {
   SensorStatus: ['sensor', 'status'],
   SensorGet: ['sensor', 'get'],
   KabbiStripSetSegment: ['kabbi-strip', 'set-segment'],
+  KabbiStripSetParam: ['kabbi-strip', 'set-param'],
+  KabbiStripParamStatus: ['kabbi-strip', 'param-status'],
 };
