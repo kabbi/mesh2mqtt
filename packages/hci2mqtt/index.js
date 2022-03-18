@@ -58,7 +58,7 @@ const sendHciCommand = async (cmd, data) => {
   ]);
 };
 
-const sendMeshMessage = async payload => {
+const sendMeshMessage = async (payload) => {
   if (payload.length >= 32) {
     console.log('dropping message >31 bytes', payload.toString('hex'));
     return;
@@ -84,7 +84,7 @@ const sendMeshMessage = async payload => {
   // Start advertising
   await sendHciCommand(0x0a, Buffer.of(1));
 
-  await delay(150); // 100 ms adv interval + some safety gap
+  await delay(250); // 100 ms adv interval + some safety gap
 
   // Stop advertising
   await sendHciCommand(0x0a, Buffer.of(0));
