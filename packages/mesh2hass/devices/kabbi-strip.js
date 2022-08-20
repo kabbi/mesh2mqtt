@@ -3,6 +3,8 @@ module.exports = async ({ device, client, state, config }) => {
   const hassPrefix = `${config.devicePrefix}/${device.addr}`;
   const meshPrefix = `${config.meshPrefix}/${device.addr}/models`;
 
+  const KeyIndex = ['on', 'color'];
+
   await client.publish(
     `homeassistant/light/${device.addr}/light/config`,
     JSON.stringify({
@@ -13,6 +15,8 @@ module.exports = async ({ device, client, state, config }) => {
         identifiers: [`blemesh_${device.addr}`],
         name: device.addr,
       },
+      // TODO: Get rid of optimistic
+      optimistic: true,
       color_mode: true,
       command_topic: `${hassPrefix}/cmd`,
       state_topic: `${hassPrefix}/state`,
@@ -35,9 +39,15 @@ module.exports = async ({ device, client, state, config }) => {
     }
 
     if (color) {
-      await client.publishJSON(`${meshPrefix}/kabbi-strip/set-param/send`, {
-        key: 'color',
-        value: (color.r << 24) | (color.g << 16) | (color.b << 8) | color.w,
+      const packedColor =
+        ((color.r << 24) |
+          (color.g << 16) |
+          (color.b << 8) |
+          (color.w || 0)) >>>
+        0;
+      await client.publishJSON(`${meshPrefix}/kabbi-kv/set-int-indexed/send`, {
+        key: KeyIndex.indexOf('color'),
+        value: packedColor,
       });
     }
   });

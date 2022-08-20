@@ -24,4 +24,7 @@ module.exports = {
   KabbiStripSetSegment: ['kabbi-strip', 'set-segment'],
   KabbiStripSetParam: ['kabbi-strip', 'set-param'],
   KabbiStripParamStatus: ['kabbi-strip', 'param-status'],
+  KabbiKVSetInt: ['kabbi-kv', 'set-int'],
+  KabbiKVSetIntIndexed: ['kabbi-kv', 'set-int-indexed'],
+  KabbiKVSetStatus: ['kabbi-kv', 'set-status'],
 };
